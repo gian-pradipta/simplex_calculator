@@ -1,5 +1,5 @@
 import re
-from simplex import SimplexTableu
+from SimplexTableu import SimplexTableu
 from Matrix import Matrix
 
 # remove whitespace
@@ -221,13 +221,15 @@ def second_phase(st: SimplexTableu, objFunc):
     st.data.container[0] = row
     basis = st.basis[1:]
     headers = st.headers[2:]
+    # st.write_table()
+
+    print("FASE 2")
     st.write_table()
     for i, var in enumerate(basis):
         col = headers.index(var)
         row = i+1
         st.data.apalah(0, row, st.data.container[0][col])
-    st.write_table()
-    print("FASE 2")
+
     st.do_iteration()
 
 def do_two_phase(objFunc, constraints):
