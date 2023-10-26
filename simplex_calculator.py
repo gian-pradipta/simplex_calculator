@@ -4,6 +4,7 @@ try:
     from tabulate import tabulate
 except ImportError:
     subprocess.run(["pip", "install", "tabulate"], check=True, text=True)
+    import tabulate
 
 from fractions import Fraction
 import copy
