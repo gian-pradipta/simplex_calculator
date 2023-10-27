@@ -10,6 +10,7 @@ def main():
         constraints.append(equ)
 
     do_linear_programming(objFunc, constraints)
+    
 
 if __name__ == "__main__":
     main()

@@ -1,6 +1,8 @@
 import re
 from SimplexTableu import SimplexTableu
+from fractions import Fraction
 from Matrix import Matrix
+import math
 
 # remove whitespace
 def remove_all_space(equation):
@@ -84,6 +86,8 @@ def parse_number_from_tokens(tokens):
     return re.findall(r'-?\d+(?=[XSA])', ",".join(tokens))
 def parse_variable_from_tokens(tokens):
     return re.findall(r'[XSA]\d+', ",".join(tokens))
+def parse_decision_variable(tokens):
+    return re.findall(r'X\d+', ",".join(tokens))
 def custom_sort_key(item):
     char, num = item[0], item[1:]
     return char, int(num)
@@ -146,7 +150,7 @@ def do_linear_programming(objFunc, constraints):
     objFunc = normalize_objective_function(objFunc)
     # Headers
     basis = constraints.pop(0)
-
+    decision_vars = list(set(parse_decision_variable(constraints)))
     headers = get_decision_variable(constraints)
 
     headers.insert(0, "Z")
@@ -160,8 +164,12 @@ def do_linear_programming(objFunc, constraints):
         return
     matrix = make_matrix(constraints, objFunc)
     m : Matrix = Matrix(matrix)
-    a : SimplexTableu = SimplexTableu(m, headers, basis)
+    a : SimplexTableu = SimplexTableu(m, headers, basis, decision_vars)
     a.do_iteration()
+    # print(a.get_result())
+    # for i, j in a.get_result().items():
+    #     print(f"{i} = {float(Fraction(j))}")
+    return a
 
 def first_phase(constraints, objFunc):
     # normalize(constraints)
@@ -236,6 +244,13 @@ def do_two_phase(objFunc, constraints):
     st : SimplexTableu = first_phase(constraints,objFunc)
     second_phase(st, objFunc)
 
+def do_integer_programming(objFunc, constraints):
+    stack = []
+    a = do_linear_programming(objFunc, constraints)
+    result = a.get_result()
+    for var, value in result.items():
+        if math.ceil(float(Fraction(value))) != math.floor(float(Fraction(value))):
+            stack.append(Fraction(value))
     
 def main():
     print("ACCEPTED VARIABLE: X1, X2, X3, ..... Z")
